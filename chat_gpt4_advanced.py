@@ -7,8 +7,8 @@ del usuario y el tema de conversación.
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
-from intent_classifier import IntentClassifier, PromptBuilder
-from typing import Dict, Optional
+from intent_classifier import IntentClassifier, PromptBuilder, FrameworkSelector
+from typing import Dict, Optional, List
 
 # Cargar variables de entorno
 load_dotenv()
@@ -35,6 +35,9 @@ class ChatGPT4Advanced:
         self.model = model
         self.modo_clasificacion = modo_clasificacion
 
+        # Inicializar selector de frameworks
+        self.framework_selector = FrameworkSelector()
+
         # Historial de conversación
         self.conversation_history = []
 
@@ -45,15 +48,34 @@ class ChatGPT4Advanced:
             "confianza": 1.0
         }
 
+        # Frameworks recomendados actuales
+        self.frameworks_recomendados = []
+
         # Prompt del sistema por defecto
         self._actualizar_prompt_sistema()
 
     def _actualizar_prompt_sistema(self):
-        """Actualiza el prompt del sistema según la clasificación actual."""
+        """Actualiza el prompt del sistema según la clasificación actual e incluye frameworks."""
         prompt_sistema = PromptBuilder.construir_prompt_sistema(
             self.clasificacion_actual["intencion"],
             self.clasificacion_actual["tema"]
         )
+
+        # Agregar contexto de frameworks si el tema no es general
+        if self.clasificacion_actual["tema"] != "general":
+            # Obtener frameworks recomendados
+            self.frameworks_recomendados = self.framework_selector.recommend_frameworks(
+                self.clasificacion_actual["tema"],
+                self.clasificacion_actual["intencion"],
+                limit=5
+            )
+
+            # Agregar contexto de frameworks al prompt
+            frameworks_context = self.framework_selector.get_frameworks_context(
+                self.clasificacion_actual["tema"],
+                self.clasificacion_actual["intencion"]
+            )
+            prompt_sistema += frameworks_context
 
         # Si ya hay historial, actualizar el primer mensaje
         if self.conversation_history:
@@ -169,6 +191,7 @@ class ChatGPT4Advanced:
             return {
                 "respuesta": assistant_message,
                 "clasificacion": nueva_clasificacion,
+                "frameworks_recomendados": self.frameworks_recomendados,
                 "metadata": {
                     "tokens_usados": response.usage.total_tokens if hasattr(response, 'usage') else None,
                     "modelo": self.model
@@ -222,6 +245,22 @@ class ChatGPT4Advanced:
         """Retorna la clasificación actual del agente."""
         return self.clasificacion_actual
 
+    def get_frameworks_recomendados(self) -> List[Dict]:
+        """Retorna los frameworks recomendados para el contexto actual."""
+        return self.frameworks_recomendados
+
+    def get_framework_info(self, framework_id: str) -> Optional[Dict]:
+        """
+        Obtiene información detallada de un framework específico.
+
+        Args:
+            framework_id: ID del framework
+
+        Returns:
+            Dict con información del framework o None
+        """
+        return self.framework_selector.get_framework_by_id(framework_id)
+
 
 def main():
     """Función principal para ejecutar el chat interactivo avanzado."""
@@ -244,6 +283,7 @@ def main():
     print("  'reset' - Reiniciar la conversación")
     print("  'historial' - Ver el número de mensajes en memoria")
     print("  'clasificacion' - Ver intención y tema actual")
+    print("  'frameworks' - Ver frameworks recomendados")
     print("  'cambiar [intencion] [tema]' - Cambiar manualmente la clasificación")
     print("=" * 70)
     print()
@@ -283,6 +323,21 @@ def main():
                 print(f"   Confianza: {clasificacion.get('confianza', 'N/A')}\n")
                 continue
 
+            if user_input.lower() == 'frameworks':
+                frameworks = chat.get_frameworks_recomendados()
+                if frameworks:
+                    print(f"\n🔧 Frameworks recomendados ({len(frameworks)}):\n")
+                    for i, fw in enumerate(frameworks, 1):
+                        print(f"{i}. {fw['nombre']} ({fw['id']})")
+                        print(f"   {fw['descripcion_corta']}")
+                        print(f"   📖 Pasos: {fw['pasos_clave']}")
+                        if fw.get('image_url'):
+                            print(f"   🔗 Visual: {fw['image_url']}")
+                        print()
+                else:
+                    print("\n⚠️  No hay frameworks recomendados para el contexto actual\n")
+                continue
+
             if user_input.lower().startswith('cambiar '):
                 parts = user_input.split()
                 if len(parts) >= 2:
@@ -302,9 +357,16 @@ def main():
             # Mostrar clasificación si es relevante
             clasificacion = resultado["clasificacion"]
             if modo_clasificacion != "manual" and clasificacion.get("metodo") != "manual":
-                print(f"📊 [Intención: {clasificacion['intencion']} | Tema: {clasificacion['tema']}]")
+                frameworks_count = len(resultado.get('frameworks_recomendados', []))
+                frameworks_info = f" | {frameworks_count} frameworks" if frameworks_count > 0 else ""
+                print(f"📊 [Intención: {clasificacion['intencion']} | Tema: {clasificacion['tema']}{frameworks_info}]")
 
             print(f"\nAsistente: {resultado['respuesta']}")
+
+            # Mostrar hint sobre frameworks si hay disponibles y es relevante
+            if resultado.get('frameworks_recomendados') and clasificacion.get('intencion') in ['elegir_herramienta', 'usar_herramienta']:
+                print(f"\n💡 Tip: Escribe 'frameworks' para ver {len(resultado['frameworks_recomendados'])} frameworks recomendados")
+
             print()
 
     except ValueError as e:

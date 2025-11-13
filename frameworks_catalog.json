@@ -1,0 +1,122 @@
+[
+  {
+    "id": "BMC",
+    "nombre": "Business Model Canvas",
+    "descripcion_corta": "Mapa visual con 9 bloques que describe cómo una organización crea, entrega y captura valor.",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/10/Business_Model_Canvas.png",
+    "pasos_clave": "Define propuesta de valor, identifica clientes, canales, relación, ingresos, recursos, actividades, socios y costos.",
+    "tema": "Estrategia"
+  },
+  {
+    "id": "LEAN_CANVAS",
+    "nombre": "Lean Canvas",
+    "descripcion_corta": "Versión simplificada del BMC para startups.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*xJd_4eT2m5_Gefcp6Z5ueQ.png",
+    "pasos_clave": "Problemas, segmentos, soluciones, propuesta de valor, canales, ingresos, costos, métricas, ventaja competitiva.",
+    "tema": "Estrategia"
+  },
+  {
+    "id": "VPC",
+    "nombre": "Value Proposition Canvas",
+    "descripcion_corta": "Diseña propuestas de valor alineadas a las necesidades del cliente.",
+    "image_url": "https://strategyzer.com/canvas/value-proposition-canvas",
+    "pasos_clave": "Perfil cliente (jobs, pains, gains), encaje con producto.",
+    "tema": "Estrategia"
+  },
+  {
+    "id": "SWOT",
+    "nombre": "Análisis FODA",
+    "descripcion_corta": "Evalúa fortalezas, oportunidades, debilidades y amenazas.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*-27LydYFJ7NqJ_sZQZltmg.png",
+    "pasos_clave": "Identifica FO, DO, FA, DA.",
+    "tema": "Estrategia"
+  },
+  {
+    "id": "PESTEL",
+    "nombre": "Análisis PESTEL",
+    "descripcion_corta": "Evalúa factores Políticos, Económicos, Sociales, Tecnológicos, Ecológicos y Legales.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*hO20j2DUNW8S79zECc7M6A.png",
+    "pasos_clave": "Analiza entorno macroeconómico.",
+    "tema": "Estrategia"
+  },
+  {
+    "id": "SIPOC",
+    "nombre": "SIPOC",
+    "descripcion_corta": "Identifica Proveedores, Entradas, Proceso, Salidas y Clientes.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*gEBZ6ENbEd4WQlOx8dZsMg.png",
+    "pasos_clave": "Mapear proceso, identificar actores y salidas.",
+    "tema": "Procesos"
+  },
+  {
+    "id": "DIAGRAMA_FLUJO",
+    "nombre": "Diagrama de flujo de procesos",
+    "descripcion_corta": "Representa visualmente las etapas de un proceso.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*mNozU3gHUGF-ktlbbzVgZg.png",
+    "pasos_clave": "Secuencia de pasos y decisiones.",
+    "tema": "Procesos"
+  },
+  {
+    "id": "EISENHOWER",
+    "nombre": "Matriz de Eisenhower",
+    "descripcion_corta": "Priorización de tareas por urgencia e importancia.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*aqgePAE3tdOgiNtwK2Ffwg.png",
+    "pasos_clave": "Clasificar tareas en 4 cuadrantes.",
+    "tema": "Procesos"
+  },
+  {
+    "id": "PHVA",
+    "nombre": "Ciclo PHVA",
+    "descripcion_corta": "Planear, Hacer, Verificar, Actuar (mejora continua).",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*G_NvLVdtHV7ghr2kKKJYUg.png",
+    "pasos_clave": "Ciclo de mejora continua.",
+    "tema": "Procesos"
+  },
+  {
+    "id": "RACI",
+    "nombre": "Matriz RACI",
+    "descripcion_corta": "Define roles y responsabilidades (Responsible, Accountable, Consulted, Informed).",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*_0mT4nTdj1u7_yMlsj9fzg.png",
+    "pasos_clave": "Asignar responsabilidades.",
+    "tema": "Procesos"
+  },
+  {
+    "id": "PAIN_GAIN",
+    "nombre": "Pain–Gain Map",
+    "descripcion_corta": "Identifica dolores y beneficios del cliente.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*mCaZ_8OuLB4vnJr3pZ3DrQ.png",
+    "pasos_clave": "Analiza pains y gains del cliente.",
+    "tema": "Innovación"
+  },
+  {
+    "id": "JOURNEY",
+    "nombre": "Customer Journey Map",
+    "descripcion_corta": "Visualiza la experiencia del cliente.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*O6Z5TuwKf5cnb0XbFKySYA.png",
+    "pasos_clave": "Etapas del viaje del cliente.",
+    "tema": "Innovación"
+  },
+  {
+    "id": "5WHYS",
+    "nombre": "Técnica de los 5 Porqués",
+    "descripcion_corta": "Encuentra la causa raíz de un problema.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*jEtGgRy7KzSFXEizLQ6ohA.png",
+    "pasos_clave": "Preguntar '¿por qué?' hasta 5 veces.",
+    "tema": "Innovación"
+  },
+  {
+    "id": "ARBOLOBJETIVOS",
+    "nombre": "Árbol de Problemas y Objetivos",
+    "descripcion_corta": "Transforma causas y efectos en metas concretas.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*og1tPk11OjBbe3jF6Rhb_w.png",
+    "pasos_clave": "Construir árbol de objetivos.",
+    "tema": "Innovación"
+  },
+  {
+    "id": "IMPACTO_ESFUERZO",
+    "nombre": "Matriz Impacto–Esfuerzo",
+    "descripcion_corta": "Prioriza proyectos según impacto y esfuerzo.",
+    "image_url": "https://miro.medium.com/v2/resize:fit:1400/1*2W7vCRzQn1lF8Jc7yR4X0w.png",
+    "pasos_clave": "Evaluar y clasificar iniciativas.",
+    "tema": "Innovación"
+  }
+]

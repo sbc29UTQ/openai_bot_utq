@@ -25,6 +25,7 @@ Chat inteligente con **detección automática de intenciones y clasificación po
 - 🧠 **Prompts Especializados**: Adapta su comportamiento según la intención y tema detectados
 - 🚀 **3 Modos de Clasificación**: Auto (GPT), Rápido (keywords), o Manual
 - 📈 **Feedback de Clasificación**: Muestra qué intención y tema detectó
+- 🔧 **Catálogo de 15 Frameworks**: Selecciona y recomienda frameworks automáticamente según el contexto (SWOT, BMC, Lean Canvas, SIPOC, Design Thinking, y más)
 
 ## Requisitos
 
@@ -177,8 +178,10 @@ print(clasificacion)
 openai_bot_utq/
 ├── chat_gpt4.py              # Versión básica del chat
 ├── chat_gpt4_advanced.py     # Versión avanzada con intenciones ⭐
-├── intent_classifier.py      # Motor de clasificación de intenciones
-├── ejemplos_uso.py           # Ejemplos ejecutables
+├── intent_classifier.py      # Motor de clasificación y selector de frameworks
+├── frameworks_catalog.json   # Catálogo de 15 frameworks (JSON) 🆕
+├── ejemplos_uso.py           # Ejemplos de intenciones
+├── demo_frameworks.py        # Demo del sistema de frameworks 🆕
 ├── requirements.txt          # Dependencias del proyecto
 ├── .env.example             # Ejemplo de configuración
 ├── .env                     # Tu configuración (no se sube a git)
@@ -215,6 +218,78 @@ La versión avanzada incluye un sistema inteligente que detecta automáticamente
 - **INNOVACIÓN** - Tecnología, transformación digital, creatividad
 
 **📚 Guía Completa:** Ver [GUIA_INTENCIONES.md](GUIA_INTENCIONES.md) para ejemplos detallados y mejores prácticas.
+
+---
+
+## 🔧 Catálogo de Frameworks
+
+La versión avanzada incluye un catálogo de **15 frameworks** que se seleccionan automáticamente según el tema y la intención del usuario.
+
+### Frameworks por Tema
+
+**Estrategia (5 frameworks):**
+- Business Model Canvas (BMC) - Modelo de negocio en 9 bloques
+- Lean Canvas - BMC simplificado para startups
+- Value Proposition Canvas (VPC) - Diseño de propuesta de valor
+- Análisis FODA/SWOT - Fortalezas, Oportunidades, Debilidades, Amenazas
+- Análisis PESTEL - Factores del entorno macroeconómico
+
+**Procesos (5 frameworks):**
+- SIPOC - Proveedores, Entradas, Proceso, Salidas, Clientes
+- Diagrama de Flujo - Visualización de procesos
+- Matriz de Eisenhower - Priorización urgencia/importancia
+- Ciclo PHVA - Planear, Hacer, Verificar, Actuar
+- Matriz RACI - Roles y responsabilidades
+
+**Innovación (5 frameworks):**
+- Pain-Gain Map - Dolores y beneficios del cliente
+- Customer Journey Map - Experiencia del cliente
+- 5 Porqués - Encontrar causa raíz
+- Árbol de Problemas y Objetivos - Transformar causas en metas
+- Matriz Impacto-Esfuerzo - Priorización de proyectos
+
+### Cómo Funciona la Selección Automática
+
+1. **Clasificación**: El agente detecta la intención y el tema
+2. **Filtrado**: Selecciona frameworks del tema correspondiente
+3. **Priorización**: Ordena según la intención (ej: para "diagnosticar" prioriza SWOT, PESTEL, 5 Porqués)
+4. **Recomendación**: Sugiere los 3-5 frameworks más relevantes
+5. **Contexto**: Los incluye en el prompt del sistema para que el agente los mencione
+
+### Uso del Catálogo
+
+**En modo interactivo:**
+```bash
+python chat_gpt4_advanced.py
+
+> ¿Qué framework me recomiendas para analizar competencia?
+📊 [Intención: elegir_herramienta | Tema: estrategia | 5 frameworks]
+💡 Tip: Escribe 'frameworks' para ver 5 frameworks recomendados
+
+> frameworks
+🔧 Frameworks recomendados (5):
+1. Análisis FODA (SWOT)
+   Evalúa fortalezas, oportunidades, debilidades y amenazas.
+   ...
+```
+
+**En modo programático:**
+```python
+from chat_gpt4_advanced import ChatGPT4Advanced
+
+chat = ChatGPT4Advanced(modo_clasificacion="rapido")
+resultado = chat.chat("Necesito analizar mi posición competitiva")
+
+# Ver frameworks recomendados
+frameworks = resultado['frameworks_recomendados']
+for fw in frameworks:
+    print(f"{fw['nombre']}: {fw['descripcion_corta']}")
+```
+
+**Demo de frameworks:**
+```bash
+python demo_frameworks.py
+```
 
 ---
 

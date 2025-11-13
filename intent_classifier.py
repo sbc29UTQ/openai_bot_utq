@@ -1,11 +1,13 @@
 """
 Módulo de Clasificación de Intenciones y Temas
 Detecta automáticamente la intención del usuario y clasifica el mensaje por tema.
+Incluye selector de frameworks del catálogo.
 """
 
 from enum import Enum
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 import json
+import os
 
 
 class Intencion(Enum):
@@ -308,3 +310,195 @@ CONTEXTO: El usuario está trabajando en temas de INNOVACIÓN.
         contexto_tema = PromptBuilder.CONTEXTO_TEMA.get(tema_enum, "")
 
         return f"{prompt_base}\n{contexto_tema}".strip()
+
+
+class FrameworkSelector:
+    """
+    Selector de frameworks del catálogo según tema e intención.
+    """
+
+    def __init__(self, catalog_path: str = "frameworks_catalog.json"):
+        """
+        Inicializa el selector cargando el catálogo de frameworks.
+
+        Args:
+            catalog_path: Ruta al archivo JSON del catálogo
+        """
+        self.catalog_path = catalog_path
+        self.frameworks = self._load_catalog()
+
+    def _load_catalog(self) -> List[Dict]:
+        """
+        Carga el catálogo de frameworks desde el archivo JSON.
+
+        Returns:
+            Lista de frameworks
+        """
+        try:
+            # Intentar cargar desde la ruta absoluta primero
+            if os.path.exists(self.catalog_path):
+                with open(self.catalog_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+
+            # Intentar desde el directorio del script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            catalog_full_path = os.path.join(script_dir, self.catalog_path)
+
+            if os.path.exists(catalog_full_path):
+                with open(catalog_full_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+
+            print(f"⚠️  Advertencia: No se pudo cargar el catálogo de frameworks desde {self.catalog_path}")
+            return []
+
+        except Exception as e:
+            print(f"⚠️  Error al cargar catálogo de frameworks: {e}")
+            return []
+
+    def get_frameworks_by_tema(self, tema: str) -> List[Dict]:
+        """
+        Obtiene frameworks filtrados por tema.
+
+        Args:
+            tema: Tema para filtrar (estrategia, procesos, innovacion)
+
+        Returns:
+            Lista de frameworks del tema
+        """
+        # Normalizar tema
+        tema_norm = tema.lower().capitalize()
+        if tema_norm == "Innovacion":
+            tema_norm = "Innovación"
+
+        return [fw for fw in self.frameworks if fw.get("tema") == tema_norm]
+
+    def get_framework_by_id(self, framework_id: str) -> Optional[Dict]:
+        """
+        Obtiene un framework específico por su ID.
+
+        Args:
+            framework_id: ID del framework
+
+        Returns:
+            Framework o None si no existe
+        """
+        for fw in self.frameworks:
+            if fw.get("id") == framework_id:
+                return fw
+        return None
+
+    def get_all_frameworks(self) -> List[Dict]:
+        """
+        Obtiene todos los frameworks del catálogo.
+
+        Returns:
+            Lista completa de frameworks
+        """
+        return self.frameworks
+
+    def recommend_frameworks(self, tema: str, intencion: str, limit: int = 3) -> List[Dict]:
+        """
+        Recomienda frameworks según tema e intención.
+
+        Args:
+            tema: Tema detectado
+            intencion: Intención detectada
+            limit: Número máximo de frameworks a recomendar
+
+        Returns:
+            Lista de frameworks recomendados
+        """
+        # Obtener frameworks del tema
+        frameworks_tema = self.get_frameworks_by_tema(tema)
+
+        if not frameworks_tema:
+            return []
+
+        # Priorizar según intención
+        if intencion == "diagnosticar":
+            # Priorizar frameworks de análisis
+            priority_ids = ["SWOT", "PESTEL", "5WHYS", "SIPOC", "ARBOLOBJETIVOS"]
+        elif intencion == "elegir_herramienta":
+            # Mostrar variedad
+            priority_ids = []  # Sin prioridad específica
+        elif intencion == "usar_herramienta":
+            # Priorizar frameworks prácticos
+            priority_ids = ["BMC", "LEAN_CANVAS", "VPC", "SIPOC", "JOURNEY", "PHVA"]
+        elif intencion == "analizar_resultado":
+            # Frameworks de evaluación
+            priority_ids = ["SWOT", "IMPACTO_ESFUERZO", "EISENHOWER"]
+        elif intencion == "recomendaciones":
+            # Frameworks de planificación
+            priority_ids = ["PHVA", "ARBOLOBJETIVOS", "EISENHOWER", "RACI"]
+        else:
+            priority_ids = []
+
+        # Ordenar: primero los prioritarios, luego el resto
+        prioritarios = [fw for fw in frameworks_tema if fw.get("id") in priority_ids]
+        otros = [fw for fw in frameworks_tema if fw.get("id") not in priority_ids]
+
+        # Combinar y limitar
+        recomendados = prioritarios + otros
+        return recomendados[:limit]
+
+    def format_framework_info(self, framework: Dict, include_image: bool = False) -> str:
+        """
+        Formatea la información de un framework para mostrar.
+
+        Args:
+            framework: Diccionario con datos del framework
+            include_image: Si incluir URL de imagen
+
+        Returns:
+            String formateado con info del framework
+        """
+        info = f"**{framework.get('nombre', 'N/A')}** ({framework.get('id', 'N/A')})\n"
+        info += f"- {framework.get('descripcion_corta', '')}\n"
+        info += f"- Pasos clave: {framework.get('pasos_clave', '')}\n"
+
+        if include_image and framework.get('image_url'):
+            info += f"- Referencia visual: {framework.get('image_url')}\n"
+
+        return info
+
+    def format_frameworks_list(self, frameworks: List[Dict], include_images: bool = False) -> str:
+        """
+        Formatea una lista de frameworks para incluir en el prompt.
+
+        Args:
+            frameworks: Lista de frameworks
+            include_images: Si incluir URLs de imágenes
+
+        Returns:
+            String formateado con la lista
+        """
+        if not frameworks:
+            return "No hay frameworks específicos disponibles para este tema."
+
+        result = "FRAMEWORKS DISPONIBLES:\n\n"
+        for i, fw in enumerate(frameworks, 1):
+            result += f"{i}. {self.format_framework_info(fw, include_images)}\n"
+
+        return result.strip()
+
+    def get_frameworks_context(self, tema: str, intencion: str) -> str:
+        """
+        Genera contexto de frameworks para agregar al prompt del sistema.
+
+        Args:
+            tema: Tema detectado
+            intencion: Intención detectada
+
+        Returns:
+            String con contexto de frameworks
+        """
+        frameworks = self.recommend_frameworks(tema, intencion, limit=5)
+
+        if not frameworks:
+            return ""
+
+        context = "\n\nFRAMEWORKS RECOMENDADOS PARA ESTE CONTEXTO:\n"
+        context += self.format_frameworks_list(frameworks, include_images=False)
+        context += "\n\nCuando sea relevante, menciona y sugiere estos frameworks específicos."
+
+        return context
